@@ -3,8 +3,9 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
+
 /* define wifi credentials */
-#define SERVER_IP "192.168.150.104"
+#define SERVER_IP "192.168.150.102"
 #ifndef STASSID
 #define STASSID "COFE_53A8"
 #define STAPSK "cofe8347"
@@ -19,6 +20,8 @@ MFRC522::MIFARE_Key key;
 
 /* this variable hold the serial number of the rfid card */
 String tag;
+
+/* associative array */
 
 void setup() {
   Serial.begin(115200);
@@ -80,21 +83,19 @@ void postRequest(String data) {
   WiFiClient client;
   HTTPClient http;
 
-  Serial.print("[HTTP] begin...\n");
   // configure traged server and url
-  http.begin(client, "http://" + String(SERVER_IP) + "/kwanzaa-pay/public/api/post-request");
+  http.begin(client, "http://" + String(SERVER_IP) + "/kwanzaa-pay/public/api/register-card");
   http.addHeader("Content-Type", "application/json");
 
-  Serial.print("[HTTP] POST...\n");
+
   // start connection and send HTTP header and body
   int httpCode = http.POST(data);
 
   if (httpCode > 0) {
-    Serial.printf("[HTTP] POST... code: %d\n", httpCode);
     if (httpCode == HTTP_CODE_OK) {
       const String& payload = http.getString();
       Serial.println("");
-      Serial.print("SERVER RESPONSE " + payload);
+      Serial.print("SERVER RESPONSE: " + payload);
       Serial.println("");
     } else {
       Serial.printf("[HTTP] POST... server returned error code: %d\n", httpCode);
